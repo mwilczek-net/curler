@@ -216,21 +216,26 @@ function list_current_directory_recursively {
     find . -type f | cut -c 3-
 }
 
+function report_missing_dir {
+    >&2 echo "Mising '${1}' directory!"
+    exit 2
+}
+
 function list_files {
     [ -n "${list_configs}" ] && {
-        pushd $PATH_CONFIGS
+        pushd $PATH_CONFIGS || report_missing_dir $PATH_CONFIGS
         list_current_directory_recursively "CONFIGS"
         popd
     }
 
     [ -n "${list_headers}" ] && {
-        pushd $PATH_HEADERS
+        pushd $PATH_HEADERS || report_missing_dir $PATH_HEADERS
         list_current_directory_recursively "HEADERS"
         popd
     }
 
     [ -n "${list_data}" ] && {
-        pushd $PATH_DATA
+        pushd $PATH_DATA || report_missing_dir $PATH_DATA
         list_current_directory_recursively "DATA"
         popd
     }
@@ -238,11 +243,31 @@ function list_files {
     [ -n "${list_configs}" ] || [ -n "${list_headers}" ] || [ -n "${list_data}" ] && exit 0
 }
 
+function check_file_exists {
+    [ -f "${1}" ] || {
+         >&2 echo "Mising '${1}' file!"
+         exit 2
+    }
+}
+
 function run_curl {
     curl_command="curl"
-    [ -n "${config_file}" ] && curl_command="${curl_command} --config '${PATH_CONFIGS}/${config_file}'"
-    [ -n "${headers_file}" ] && curl_command="${curl_command} -H '@${PATH_HEADERS}/${headers_file}'"
-    [ -n "${data_file}" ] && curl_command="${curl_command} -d '@${PATH_DATA}/${data_file}'"
+
+    [ -n "${config_file}" ] && {
+        check_file_exists "${PATH_CONFIGS}/${config_file}" ;
+        curl_command="${curl_command} --config '${PATH_CONFIGS}/${config_file}'"
+    }
+
+    [ -n "${headers_file}" ] && {
+        check_file_exists "${PATH_HEADERS}/${headers_file}" ;
+        curl_command="${curl_command} -H '@${PATH_HEADERS}/${headers_file}'"
+    }
+
+    [ -n "${data_file}" ] && {
+        check_file_exists "${PATH_DATA}/${data_file}" ;
+        curl_command="${curl_command} -d '@${PATH_DATA}/${data_file}'"
+    }
+
     [ -n "${url}" ] && curl_command="${curl_command} ${url}"
 
     >&2 echo "----------------------------------------------------------------------"
