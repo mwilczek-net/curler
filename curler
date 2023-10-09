@@ -3,13 +3,12 @@
 # required for zparseopts
 zmodload zsh/zutil
 
-CURRENT_PATH="$(cd "$(dirname "$0")" && pwd -P)"
+# required for formatting output
+alias python=python3.11
 
 PATH_CONFIGS="configs"
 PATH_HEADERS="headers"
 PATH_DATA="data"
-
-alias python=python3.11
 
 url=""
 
