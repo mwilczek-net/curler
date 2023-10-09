@@ -191,17 +191,17 @@ EOF--
 cat <<EOF-- > "curler_examples.sh"
 #!/bin/zsh
 
-./curler.sh -K 'demo/lorem_pixum_list.cfg' -H 'demo/lorem_pixum.txt'
-./curler.sh -K 'demo/lorem_pixum_list.cfg' -H 'demo/lorem_pixum.txt' --json
+curler -K 'demo/lorem_pixum_list.cfg' -H 'demo/lorem_pixum.txt'
+curler -K 'demo/lorem_pixum_list.cfg' -H 'demo/lorem_pixum.txt' --json
 
-./curler.sh -K 'demo/lorem_pixum_random_details.cfg' -H 'demo/lorem_pixum.txt'
-./curler.sh -K 'demo/lorem_pixum_random_details.cfg' -H 'demo/lorem_pixum.txt' --json
+curler -K 'demo/lorem_pixum_random_details.cfg' -H 'demo/lorem_pixum.txt'
+curler -K 'demo/lorem_pixum_random_details.cfg' -H 'demo/lorem_pixum.txt' --json
 
-./curler.sh -K 'demo/yoda.cfg' -H 'demo/yoda.txt' -D 'demo/yoda.txt'
-./curler.sh -K 'demo/yoda.cfg' -H 'demo/yoda.txt' -D 'demo/yoda.txt' --json
+curler -K 'demo/yoda.cfg' -H 'demo/yoda.txt' -D 'demo/yoda.txt'
+curler -K 'demo/yoda.cfg' -H 'demo/yoda.txt' -D 'demo/yoda.txt' --json
 
-./curler.sh -K 'demo/country_details.cfg' -H 'demo/country_details.txt' -D 'demo/country_details_pl.graphql'
-./curler.sh -K 'demo/country_details.cfg' -H 'demo/country_details.txt' -D 'demo/country_details_pl.graphql' --json
+curler -K 'demo/country_details.cfg' -H 'demo/country_details.txt' -D 'demo/country_details_pl.graphql'
+curler -K 'demo/country_details.cfg' -H 'demo/country_details.txt' -D 'demo/country_details_pl.graphql' --json
 EOF--
 
     echo "Initialised"
