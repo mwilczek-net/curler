@@ -13,7 +13,7 @@ PATH_DATA="data"
 url=""
 
 config_file=""
-headers_file=""
+headers_file=()
 data_file=""
 
 format_json=""
@@ -29,7 +29,7 @@ function parse_parameters {
     zparseopts -D -E -F - \
             u:=url -url:=url \
             K:=config_file -configs:=config_file \
-            H:=headers_file -headers:=headers_file \
+            H+:=headers_file -headers+:=headers_file \
             D:=data_file -data:=data_file \
             -json=format_json \
             -listConfigs=list_configs \
@@ -39,9 +39,13 @@ function parse_parameters {
             h=print_help -help=print_help \
         || { print_help_content; exit 2 }
 
+        # print -rC1 -- "${headers_file[@]}"
+
         url="${url/(-u =|--url =|-u |--url )/}"
         config_file="${config_file/(-K =|--configs =|-K |--configs )/}"
-        headers_file="${headers_file/(-H =|--headers =|-H |--headers )/}"
+        # headers_file="${headers_file/(-H =|--headers =|-H |--headers )/}"
+        headers_file=("${(@)headers_file:#'-H'}")
+        headers_file=("${(@)headers_file:#'-headers'}")
         data_file="${data_file/(-D =|--data =|-D |--data )/}"
 }
 
@@ -63,13 +67,14 @@ cat <<EOF--
 
   -H FILE | --headers FILE
         Path to hdeaders FILE form '${PATH_HEADERS}' directory. Wihtout '${PATH_HEADERS}' prefix.
-        If headers file is in '${PATH_HEADERS}/my_headers.txt' then use: 'curler -K my_headers.txt'
-        If file in nested in '${PATH_HEADERS}/xyz/headers.txt' then use: 'curler -K xyz/headers.txt'
+        If headers file is in '${PATH_HEADERS}/my_headers.txt' then use: 'curler -H my_headers.txt'
+        If file in nested in '${PATH_HEADERS}/xyz/headers.txt' then use: 'curler -H xyz/headers.txt'
+        Allowed mulitple times: 'curler -H xyz/headers_01.txt -H secret/headers.txt'
 
   -D FILE | --data FILE
         Path to data FILE form '${PATH_DATA}' directory. Wihtout 'data' prefix.
-        If data file is in '${PATH_DATA}/my_data.json' then use: 'curler -K my_data.json'
-        If file in nested in '${PATH_DATA}/xyz/data.xml' then use: 'curler -K xyz/data.xml'
+        If data file is in '${PATH_DATA}/my_data.json' then use: 'curler -D my_data.json'
+        If file in nested in '${PATH_DATA}/xyz/data.xml' then use: 'curler -D xyz/data.xml'
 
   --json
         Format output as JSON string.
@@ -258,10 +263,10 @@ function run_curl {
         curl_command="${curl_command} --config '${PATH_CONFIGS}/${config_file}'"
     }
 
-    [ -n "${headers_file}" ] && {
-        check_file_exists "${PATH_HEADERS}/${headers_file}" ;
-        curl_command="${curl_command} -H '@${PATH_HEADERS}/${headers_file}'"
-    }
+    for h in $headers_file; do
+        check_file_exists "${PATH_HEADERS}/${h}" ;
+        curl_command="${curl_command} -H '@${PATH_HEADERS}/${h}'"
+    done
 
     [ -n "${data_file}" ] && {
         check_file_exists "${PATH_DATA}/${data_file}" ;
@@ -274,7 +279,7 @@ function run_curl {
     >&2 echo "$curl_command"
     >&2 echo "----------------------------------------------------------------------"
 
-    # space because
+    # space required
     eval " $curl_command"
 }
 
@@ -291,8 +296,7 @@ function run_curl_wrapper {
         exit_codes=("${pipestatus[@]}")
     fi
 
-    for code in $exit_codes
-    do
+    for code in $exit_codes; do
         [ "${code}" -ne "0" ] && exit "${code}"
     done
 
