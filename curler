@@ -4,7 +4,7 @@
 zmodload zsh/zutil
 
 # required for formatting output
-alias python=python3.11
+alias python=python3
 
 PATH_CONFIGS="configs"
 PATH_HEADERS="headers"
