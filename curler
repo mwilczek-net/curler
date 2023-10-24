@@ -104,19 +104,35 @@ function execute_environment_initialization {
         exit 2
     fi
 
+
     # basic directories
     mkdir -p "${PATH_CONFIGS}"
     mkdir -p "${PATH_HEADERS}"
     mkdir -p "${PATH_DATA}"
 
+    headers_gitignore_file="${PATH_HEADERS}/.gitignore"
+
+    secrets_sub_dir="secrets"
+
+    path_headers_secrets="${PATH_HEADERS}/${secrets_sub_dir}"
+    mkdir -p "${path_headers_secrets}"
+
+    # demo
     path_configs_demo="${PATH_CONFIGS}/demo"
     path_headers_demo="${PATH_HEADERS}/demo"
     path_data_demo="${PATH_DATA}/demo"
-
-    # demo
     mkdir -p "${path_configs_demo}"
     mkdir -p "${path_headers_demo}"
+    mkdir -p "${path_headers_demo}"
     mkdir -p "${path_data_demo}"
+
+echo "/${secrets_sub_dir}" >> "${headers_gitignore_file}"
+cat <<EOF-- > "${path_headers_secrets}/reamde.md"
+By default, this directory is ignored by git
+
+Put all headers with tokens and passwords here
+
+EOF--
 
 cat <<EOF-- > "${path_configs_demo}/lorem_pixum_list.cfg"
 # config files for curl accepts comments
